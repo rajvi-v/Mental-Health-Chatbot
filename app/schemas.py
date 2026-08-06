@@ -48,4 +48,5 @@ class EmotionOption(BaseModel):
 
 class EmotionGroup(BaseModel):
     group: str
+    emoji: str = ""
     options: list[EmotionOption]

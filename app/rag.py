@@ -30,6 +30,7 @@ from app.emotions import (
     EmotionRecord,
     KnowledgeBaseError,
     emotion_records_to_documents,
+    load_emotion_emojis,
     load_emotion_records,
 )
 
@@ -39,6 +40,7 @@ class RagServices:
     knowledge_base: "ChromaKnowledgeBase"
     llm: ChatOpenAI | None
     emotions: list[EmotionRecord] = dataclass_field(default_factory=list)
+    emotion_emojis: dict[str, str] = dataclass_field(default_factory=dict)
 
 
 def file_sha256(path: Path) -> str:
@@ -227,4 +229,6 @@ def initialise_services() -> RagServices:
         knowledge_base=build_or_load_knowledge_base(),
         llm=create_llm(),
         emotions=load_emotion_records(),
+        emotion_emojis=load_emotion_emojis(),
     )
+

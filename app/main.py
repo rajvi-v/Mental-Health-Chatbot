@@ -30,8 +30,10 @@ from app.config import (
 )
 from app.emotions import (
     EmotionRecord,
+    emoji_code_to_character,
     emotion_records_to_documents,
     group_emotions,
+    load_emotion_emojis,
     load_emotion_records,
 )
 from app.rag import (
@@ -72,7 +74,7 @@ async def index() -> FileResponse:
 async def emotions(request: Request) -> list[EmotionGroup]:
     services = getattr(request.app.state, "rag_services", None)
     if services is not None:
-        return group_emotions(services.emotions)
+        return group_emotions(services.emotions, services.emotion_emojis)
 
     error = getattr(request.app.state, "rag_error", None)
     detail = "The emotions knowledge base is unavailable."
@@ -92,3 +94,5 @@ async def chat(chat_request: ChatRequest, request: Request) -> ChatResponse:
         safetyWarning=has_safety_concern(chat_request.message),
         createdAt=datetime.now(timezone.utc).isoformat(),
     )
+
+

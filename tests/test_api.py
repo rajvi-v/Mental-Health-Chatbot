@@ -43,7 +43,7 @@ def make_emotions_workbook(path: Path) -> None:
     workbook = openpyxl.Workbook()
     emoji_sheet = workbook.active
     emoji_sheet.title = main.EMOJI_SHEET_NAME
-    emoji_sheet.append(["Main emotion", "Happy", "U+1F600"])
+    emoji_sheet.append(["Main emotion", "Happy", "U+1F642"])
     sheet = workbook.create_sheet("Happy")
     sheet.append(["Emotion", "Reason - Why are you feeling this way?", "Speech bubble alert", "Services"])
     sheet.append(["1. HAPPY", None, None, None])
@@ -312,6 +312,20 @@ def test_generated_answer_is_limited_to_four_sentences(client, services):
     assert response.json()["content"] == "One. Two. Three. Four."
 
 
+def test_emoji_code_to_character_converts_unicode_codes():
+    assert main.emoji_code_to_character("U+1F642") == "\U0001F642"
+    assert main.emoji_code_to_character("Tw Code") == ""
+    assert main.emoji_code_to_character("U+200D") == ""
+
+
+def test_load_emotion_emojis_reads_main_feeling_codes(tmp_path):
+    workbook_path = tmp_path / "emotions.xlsx"
+    make_emotions_workbook(workbook_path)
+
+    emojis = main.load_emotion_emojis(workbook_path)
+
+    assert emojis == {"happy": "\U0001F642"}
+
 def test_load_emotion_records_skips_emoji_and_category_rows(tmp_path):
     workbook_path = tmp_path / "emotions.xlsx"
     make_emotions_workbook(workbook_path)
@@ -366,12 +380,15 @@ def test_emotions_endpoint_returns_grouped_rows(client, services):
         )
     ]
 
+    services.emotion_emojis = {"happy": "\U0001F642"}
+
     response = client.get("/api/emotions")
 
     assert response.status_code == 200
     assert response.json() == [
         {
             "group": "Happy",
+            "emoji": "\U0001F642",
             "options": [
                 {
                     "emotion": "Happy - cheerful",
@@ -409,4 +426,5 @@ def test_emotion_question_uses_retrieved_workbook_context(client, services):
     prompt = services.llm.last_messages[1].content
     assert "Emotion group: Happy" in prompt
     assert "Services: Clubs and Societies" in prompt
+
 

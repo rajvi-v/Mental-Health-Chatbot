@@ -20,7 +20,6 @@ const sendButton = document.querySelector("#send-button");
 const composer = document.querySelector("#composer");
 const sidebar = document.querySelector("#sidebar");
 const emotionGroupSelect = document.querySelector("#emotion-group");
-const emotionReasonSelect = document.querySelector("#emotion-reason");
 const emotionSendButton = document.querySelector("#emotion-send");
 const emotionStatus = document.querySelector("#emotion-status");
 
@@ -36,6 +35,10 @@ function makeOption(value, text) {
   option.value = value;
   option.textContent = text;
   return option;
+}
+
+function formatEmotionLabel(group) {
+  return group.emoji ? `${group.emoji} ${group.group}` : group.group;
 }
 
 function renderMessage(message) {
@@ -82,27 +85,18 @@ function updateComposer() {
 }
 
 function updateEmotionSendButton() {
-  emotionSendButton.disabled = !emotionGroupSelect.value || !emotionReasonSelect.value || state.sending;
+  emotionSendButton.disabled = !emotionGroupSelect.value || state.sending;
 }
 
 function updateEmotionControls() {
-  const group = state.emotionGroups.find((item) => item.group === emotionGroupSelect.value);
-  emotionReasonSelect.replaceChildren(makeOption("", group ? "Choose a reason" : "Choose a feeling first"));
-  emotionReasonSelect.disabled = !group || state.sending;
-
-  if (group) {
-    group.options.forEach((option, index) => {
-      emotionReasonSelect.append(makeOption(String(index), option.emotion));
-    });
-  }
-
+  emotionGroupSelect.disabled = state.emotionGroups.length === 0 || state.sending;
   updateEmotionSendButton();
 }
 
 function renderEmotionPicker() {
   emotionGroupSelect.replaceChildren(makeOption("", "Choose a feeling"));
   state.emotionGroups.forEach((group) => {
-    emotionGroupSelect.append(makeOption(group.group, group.group));
+    emotionGroupSelect.append(makeOption(group.group, formatEmotionLabel(group)));
   });
   emotionGroupSelect.disabled = state.emotionGroups.length === 0;
   updateEmotionControls();
@@ -119,17 +113,14 @@ async function loadEmotionPicker() {
   } catch (error) {
     emotionStatus.textContent = error.message || "Feelings are unavailable.";
     emotionGroupSelect.disabled = true;
-    emotionReasonSelect.disabled = true;
     emotionSendButton.disabled = true;
   }
 }
 
 function sendEmotionSelection() {
   const group = state.emotionGroups.find((item) => item.group === emotionGroupSelect.value);
-  const option = group?.options[Number(emotionReasonSelect.value)];
-  if (!option || state.sending) return;
-  const reason = option.reason || "this reason";
-  input.value = `I am feeling ${option.emotion} because ${reason}. What support is recommended?`;
+  if (!group || state.sending) return;
+  input.value = `I am feeling ${formatEmotionLabel(group)}. What support is recommended?`;
   updateComposer();
   composer.requestSubmit();
 }
@@ -193,7 +184,6 @@ document.querySelectorAll(".nav-pill").forEach((button) => {
 document.querySelector("#open-menu").addEventListener("click", () => sidebar.classList.add("is-open"));
 document.querySelector("#close-menu").addEventListener("click", () => sidebar.classList.remove("is-open"));
 emotionGroupSelect.addEventListener("change", updateEmotionControls);
-emotionReasonSelect.addEventListener("change", updateEmotionSendButton);
 emotionSendButton.addEventListener("click", sendEmotionSelection);
 input.addEventListener("input", updateComposer);
 input.addEventListener("keydown", (event) => {
@@ -205,3 +195,5 @@ input.addEventListener("keydown", (event) => {
 composer.addEventListener("submit", sendMessage);
 renderMessages();
 loadEmotionPicker();
+
+
