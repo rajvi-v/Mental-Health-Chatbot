@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Wellbeing, academic and career support for university students.">
+    <title>Student Support Chat</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand-block">
+          <img class="uea-logo" src="/static/uea-logo.svg" alt="University of East Anglia">
+        
+          <button class="icon-button mobile-only" id="close-menu" type="button" aria-label="Close menu">&times;</button>
+        </div>
+        <!-- <nav class="topic-panel" aria-label="Support categories">
+          <button class="nav-pill active" type="button" data-topic="Wellbeing"><span aria-hidden="true">&#9825;</span><span>Wellbeing</span></button>
+          <button class="nav-pill" type="button" data-topic="Academic"><span aria-hidden="true">&#10003;</span><span>Academic</span></button>
+          <button class="nav-pill" type="button" data-topic="Career"><span aria-hidden="true">&#9671;</span><span>Career</span></button>
+        </nav> -->
+        <section class="sidebar-section emotion-picker" aria-label="Feelings picker">
+          <p class="section-label">Feelings</p>
+          <label class="sr-only" for="emotion-group">Choose a feeling</label>
+          <select class="picker-select" id="emotion-group" disabled>
+            <option value="">Choose a feeling</option>
+          </select>
+          <label class="sr-only" for="emotion-reason">Choose a reason</label>
+          <select class="picker-select" id="emotion-reason" disabled>
+            <option value="">Choose a feeling first</option>
+          </select>
+          <button class="picker-button" id="emotion-send" type="button" disabled>Ask about this</button>
+          <p class="picker-status" id="emotion-status" aria-live="polite"></p>
+        </section>
+        <section class="sidebar-section">
+          <p class="section-label">Popular topics</p>
+          <div class="chip-list" id="topic-chips"></div>
+        </section>
+      </aside>
+      <section class="chat-workspace" aria-label="Chat workspace">
+        <header class="topbar">
+          <button class="icon-button mobile-only" id="open-menu" type="button" aria-label="Open menu">&#9776;</button>
+        </header>
+        <div class="chat-panel">
+          <div class="messages" id="messages" aria-live="polite"></div>
+          <div class="prompt-row" id="prompt-row" aria-label="Suggested prompts"></div>
+          <form class="composer" id="composer">
+            <label for="chat-input" class="sr-only">Message UEA student support chat</label>
+            <textarea id="chat-input" placeholder="Ask about how you feel, study pressure, settling in, crisis support, or your placement year..." rows="2" maxlength="4000"></textarea>
+            <button class="send-button" id="send-button" type="submit" disabled><span aria-hidden="true">&#10148;</span><span>Send</span></button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
